@@ -1,29 +1,48 @@
 import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { nanoid } from "nanoid";
 import Todo from "./components/Todo";
 import Form from "./components/Form";
-import FilterButton from "./components/FilterBtn";
-import { nanoid } from "nanoid";}
+import FilterButton from "./components/FilterButton";
 
 function App(props) {
-  const [tasks, setTasks] = useState(props.tasks);
-
-  const addTask = (name) => {
+  function addTask(name) {
     const newTask = { id: `todo-${nanoid()}`, name, completed: false };
-
     setTasks([...tasks, newTask]);
-  };
+  }
 
-  const taskList = props.tasks?.map((task) => (
+  function toggleTaskCompleted(id) {
+    const updatedTasks = tasks.map((task) => {
+      // if this task has the same ID as the edited task
+      if (id === task.id) {
+        // use object spread to make a new object
+        // whose `completed` prop has been inverted
+        return { ...task, completed: !task.completed };
+      }
+      return task;
+    });
+    setTasks(updatedTasks);
+  }
+
+  function deleteTask(id) {
+    const remainingTasks = tasks.filter((task) => id !== task.id);
+    setTasks(remainingTasks);
+  }
+
+  const [tasks, setTasks] = useState(props.tasks);
+  const taskList = tasks?.map((task) => (
     <Todo
       id={task.id}
       name={task.name}
       completed={task.completed}
       key={task.id}
+      toggleTaskCompleted={toggleTaskCompleted}
+      deleteTask={deleteTask}
     />
   ));
+
+  const tasksNoun = taskList.length !== 1 ? "tasks" : "task";
+  const headingText = `${taskList.length} ${tasksNoun} remaining`;
+
   return (
     <div className="todoapp stack-large">
       <h1>TodoMatic</h1>
@@ -33,16 +52,13 @@ function App(props) {
         <FilterButton />
         <FilterButton />
       </div>
-      <h2 id="list-heading">3 tasks remaining</h2>
+      <h2 id="list-heading">{headingText}</h2>
       <ul
         role="list"
         className="todo-list stack-large stack-exception"
         aria-labelledby="list-heading"
       >
         {taskList}
-        {/* <Todo name="Eat" completed={true} id="todo-0" />
-        <Todo name="Sleep" completed={false} id="todo-1" />
-        <Todo name="Repeat" completed={false} id="todo-2" /> */}
       </ul>
     </div>
   );
