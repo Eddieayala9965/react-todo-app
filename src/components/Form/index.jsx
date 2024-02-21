@@ -1,7 +1,15 @@
-export const Form = () => {
+import { useState } from "react";
+export const Form = (props) => {
+  const [name, setName] = useState("");
+
   const handleSubmit = (event) => {
     event.preventDefault();
-    alert("Hello, world!");
+    props.addTask("Say hello");
+    setName("");
+  };
+
+  const handleChange = (e) => {
+    console.log(e.target.value);
   };
   return (
     <form onSubmit={handleSubmit}>
@@ -16,6 +24,8 @@ export const Form = () => {
         className="input input__lg"
         name="text"
         autoComplete="off"
+        value={name}
+        onChange={handleChange}
       />
       <button type="submit" className="btn btn__primary btn__lg">
         Add
